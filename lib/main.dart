@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 void main() {
+  MainDIModule().configure(GetIt.I);
   runApp(const MyApp());
 }
 
@@ -12,7 +13,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MainDIModule().configure(GetIt.I);
     return MaterialApp(
       title: 'Test app',
       home: CharactersScreen(),

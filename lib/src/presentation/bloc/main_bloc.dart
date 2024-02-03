@@ -26,7 +26,7 @@ class MainPageBloc
     DataLoadedOnMainPageEvent event,
     Emitter<MainPageState> emit,
   ) async {
-    if (event.characters == null) {
+    if (event.characters != null) {
       emit(SuccessfulMainPageState(event.characters!));
     } else {
       emit(UnSuccessfulMainPageState());
