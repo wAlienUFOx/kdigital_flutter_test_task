@@ -4,6 +4,7 @@ import 'package:kdigital_test/src/presentation/bloc/main_bloc.dart';
 import 'package:kdigital_test/src/presentation/bloc/main_event.dart';
 import 'package:kdigital_test/src/presentation/bloc/main_state.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -81,10 +82,14 @@ class CharactersScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(2.0),
                   child: Text(character.name),
                 ),
-                Image.network(
-                  character.image,
-                  width: 50,
+                SizedBox(
                   height: 50,
+                  width: 50,
+                  child: CachedNetworkImage(
+                    imageUrl: character.image,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
                 ),
               ],
             ),
