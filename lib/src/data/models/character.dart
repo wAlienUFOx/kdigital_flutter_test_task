@@ -6,8 +6,15 @@ part 'character.g.dart';
 class Character {
   final String name;
   final String image;
+  final String gender;
+  final String status;
 
-  Character(this.name, this.image);
+  Character(
+      this.name,
+      this.image,
+      this.gender,
+      this.status
+      );
 
   factory Character.fromJson(Map<String, dynamic> json) =>
       _$CharacterFromJson(json);

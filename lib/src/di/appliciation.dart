@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../presentation/character_screen.dart';
+import '../presentation/ui/character_screen.dart';
 
 class Application extends StatelessWidget {
 
