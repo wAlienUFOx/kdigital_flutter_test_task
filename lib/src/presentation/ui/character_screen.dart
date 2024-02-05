@@ -71,17 +71,41 @@ class CharactersScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(32),
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text(character.name),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Text(character.name),
+                ),
+                Image.network(
+                  character.image,
+                  width: 50,
+                  height: 50,
+                ),
+              ],
             ),
-            Image.network(
-              character.image,
-              width: 50,
-              height: 50,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Text(character.gender),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Text(
+                    character.status,
+                    style: TextStyle(color: character.status == 'Alive'
+                        ? Colors.green
+                        : Colors.red
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
