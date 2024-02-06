@@ -7,17 +7,23 @@ class CharacterService {
 
   Future<List<Character>?> getCharacters(int page) async {
     var client = Client();
-    final charResult = await client.get(
-      Uri.parse('$_BASE_URL$page'),
-    );
-    final jsonMap = await json.decode(charResult.body) as Map<String, dynamic>;
+    try {
+      final charResult = await client.get(
+        Uri.parse('$_BASE_URL$page'),
+      );
+      final jsonMap = await json.decode(charResult.body) as Map<String, dynamic>;
 
-    return Future.value(
-      List.of(
-        (jsonMap["results"] as List<dynamic>).map(
-              (value) => Character.fromJson(value),
+      return Future.value(
+        List.of(
+          (jsonMap["results"] as List<dynamic>).map(
+                (value) => Character.fromJson(value),
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      await Future.delayed(const Duration(seconds: 1));
+      print(e);
+    }
+    return Future(() => null);
   }
 }

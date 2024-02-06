@@ -10,21 +10,34 @@ import 'package:get_it/get_it.dart';
 
 @immutable
 class CharactersScreen extends StatelessWidget {
+  final MainPageBloc mainPageBloc = MainPageBloc(
+      InitialMainPageState(),
+      GetIt.I.get<CharactersRepository>()
+  );
+  final ScrollController scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
+    List<Character> characters = [];
     return Scaffold(
       body: BlocProvider(
-        create: (context) => MainPageBloc(
-          InitialMainPageState(),
-          GetIt.I.get<CharactersRepository>(),
-        )..add(const GetTestDataOnMainPageEvent(1)),
+        create: (context) => mainPageBloc..add(const LoadingDataOnMainPageEvent()),
         child: BlocConsumer<MainPageBloc, MainPageState>(
           listener: (context, state) {},
           builder: (blocContext, state) {
             if (state is LoadingMainPageState) {
               return _loadingWidget(context);
-            } else if (state is SuccessfulMainPageState) {
-              return _successfulWidget(context, state);
+            } else if (state is LoadingNextMainPageState || state is SuccessfulMainPageState
+                || state is UnSuccessfulNextMainPageState) {
+              if (state is SuccessfulMainPageState) characters.addAll(state.characters);
+              return Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  _successfulWidget(context, characters),
+                  if (state is LoadingNextMainPageState) _loadingNextPageWidget(context),
+                  if (state is UnSuccessfulNextMainPageState) _errorLoadingWidget(context),
+                ],
+              );
             } else {
               return Center(child: const Text("error"));
             }
@@ -48,13 +61,33 @@ class CharactersScreen extends StatelessWidget {
     );
   }
 
+  Widget _loadingNextPageWidget(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _errorLoadingWidget(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(46.0),
+      child: Text('error', style: TextStyle(color: Colors.red),),
+    );
+  }
+
   Widget _successfulWidget(
-      BuildContext context, SuccessfulMainPageState state) {
+      BuildContext context, List<Character> characters) {
+    scrollController.addListener(() {
+      if (scrollController.offset == scrollController.position.maxScrollExtent) {
+        mainPageBloc.add(LoadingNextDataOnMainPageEvent());
+      }
+    });
     return ListView.builder(
       cacheExtent: double.infinity,
-      itemCount: state.characters.length,
+      controller: scrollController,
+      itemCount: characters.length,
       itemBuilder: (context, index) {
-        return _characterWidget(context, state.characters[index]);
+        return _characterWidget(context, characters[index]);
       },
     );
   }
@@ -72,16 +105,16 @@ class CharactersScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(32),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Text(character.name),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Text(character.name),
-                ),
                 SizedBox(
                   height: 50,
                   width: 50,
@@ -91,24 +124,24 @@ class CharactersScreen extends StatelessWidget {
                     errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Text(character.gender),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Text(
-                    character.status,
-                    style: TextStyle(color: character.status == 'Alive'
-                        ? Colors.green
-                        : Colors.red
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Text(character.gender),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Text(
+                        character.status,
+                        style: TextStyle(color: character.status == 'Alive'
+                            ? Colors.green
+                            : Colors.red
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

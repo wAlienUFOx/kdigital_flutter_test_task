@@ -13,7 +13,18 @@ class LoadingMainPageState extends MainPageState {
   List<Object> get props => [];
 }
 
+class LoadingNextMainPageState extends MainPageState {
+
+  @override
+  List<Object> get props => [];
+}
+
 class UnSuccessfulMainPageState extends MainPageState {
+  @override
+  List<Object> get props => [];
+}
+
+class UnSuccessfulNextMainPageState extends MainPageState {
   @override
   List<Object> get props => [];
 }

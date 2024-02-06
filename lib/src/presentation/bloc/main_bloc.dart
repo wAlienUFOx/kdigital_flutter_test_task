@@ -6,19 +6,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class MainPageBloc
     extends Bloc<MainPageEvent, MainPageState> {
   final CharactersRepository _charactersRepository;
+  int pageIndex = 1;
 
   MainPageBloc(
     MainPageState initialState,
     this._charactersRepository,
   ) : super(initialState) {
-    on<GetTestDataOnMainPageEvent>(
-      (event, emitter) => _getDataOnMainPageCasino(event, emitter),
-    );
     on<DataLoadedOnMainPageEvent>(
       (event, emitter) => _dataLoadedOnMainPageCasino(event, emitter),
     );
     on<LoadingDataOnMainPageEvent>(
-      (event, emitter) => emitter(LoadingMainPageState()),
+      (event, emitter) {
+        emitter(LoadingMainPageState());
+        _getDataOnMainPageCasino(emitter);
+      },
+    );
+    on<LoadingNextDataOnMainPageEvent>(
+          (event, emitter) {
+            if (pageIndex < 42) {
+              pageIndex++;
+              emitter(LoadingNextMainPageState());
+              _getDataOnMainPageCasino(emitter);
+            }
+          },
     );
   }
 
@@ -29,15 +39,19 @@ class MainPageBloc
     if (event.characters != null) {
       emit(SuccessfulMainPageState(event.characters!));
     } else {
-      emit(UnSuccessfulMainPageState());
+      if (pageIndex == 1) {
+        emit(UnSuccessfulMainPageState());
+      } else {
+        emit(UnSuccessfulNextMainPageState());
+      }
+      _getDataOnMainPageCasino(emit);
     }
   }
 
   Future<void> _getDataOnMainPageCasino(
-    GetTestDataOnMainPageEvent event,
     Emitter<MainPageState> emit,
   ) async {
-    _charactersRepository.getCharacters(event.page).then(
+    _charactersRepository.getCharacters(pageIndex).then(
       (value) {
         add(DataLoadedOnMainPageEvent(value));
       },

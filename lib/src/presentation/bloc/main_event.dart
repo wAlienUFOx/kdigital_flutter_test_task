@@ -8,17 +8,15 @@ abstract class MainPageEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class GetTestDataOnMainPageEvent extends MainPageEvent {
-  final int page;
-
-  const GetTestDataOnMainPageEvent(this.page);
+class LoadingDataOnMainPageEvent extends MainPageEvent {
+  const LoadingDataOnMainPageEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-class LoadingDataOnMainPageEvent extends MainPageEvent {
-  const LoadingDataOnMainPageEvent();
+class LoadingNextDataOnMainPageEvent extends MainPageEvent {
+  const LoadingNextDataOnMainPageEvent();
 
   @override
   List<Object?> get props => [];
